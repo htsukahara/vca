@@ -37,8 +37,8 @@ end
 
 a = randn(K * d, d);
 b = randn(K, 1);
-p = abs(100 * randn(K, 1));
-q = abs(100 * randn(K, 1));
+p = abs(10 * randn(K, 1));
+q = abs(10 * randn(K, 1));
 
 if nargin > 2
     d = varargin{3};
@@ -57,12 +57,20 @@ if nargin > 5
 end
 
 Sm = zeros(N * K, d);
+dt = 2 * pi / N;
 for k = 1 : K
-    t = 0.03 * [1:N]';
-    Sm(N * (k - 1) + 1 : N * k, 1) = p(k) * tan(t);
-    Sm(N * (k - 1) + 1 : N * k, 2) = q(k) ./ cos(t);
-%     Sm(N * (k - 1) + 1 : N * k, :) = Sm(N * (k - 1) + 1: N * k, :) * a(d * (k - 1) + 1: d * k, :);
-%     Sm(N * (k - 1) + 1 : N * k, :) = Sm(N * (k - 1) + 1: N * k, :) + b(k);
+    n = 0;
+    t = 0;
+    while n < N
+        t = t + dt;
+        if abs(tan(t)) < 5 && abs(cos(t)) > 0.1
+            n = n + 1;
+            Sm(n, 1) = p(k) * tan(t);
+            Sm(n, 2) = q(k) ./ cos(t);
+    %     Sm(N * (k - 1) + 1 : N * k, :) = Sm(N * (k - 1) + 1: N * k, :) * a(d * (k - 1) + 1: d * k, :);
+    %     Sm(N * (k - 1) + 1 : N * k, :) = Sm(N * (k - 1) + 1: N * k, :) + b(k);
+        end
+    end
 end
 
 filename = ['ParabolicCurveData.N-' num2str(N) '_K-' num2str(K) '_d-' num2str(d) '_r-' num2str(r) '.mat'];
